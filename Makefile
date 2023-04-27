@@ -2,7 +2,7 @@ SHELL := /bin/bash
 all: qsort
 
 qsort: main.cpp lib/user.hpp
-	g++ -std=c++17 main.cpp -o qsort
+	g++ -std=c++20 main.cpp -o qsort
 
 install:
 	mv -f qsort /usr/local/bin
@@ -14,18 +14,23 @@ install:
 	fi 
 	cp -f "./conf/extensions.json" "/etc/qsort"
 	cp -f "./conf/qsort.conf" "/etc/qsort"
+	cp -f "./conf/qsort-completion.bash" "/etc/bash_completion.d"
 
 deb: qsort-debian.deb
 
 qsort-debian.deb:
-	g++ -std=c++17 main.cpp -o qsort
+	g++ -std=c++20 main.cpp -o qsort
 	mkdir -p qsort-debian/usr/local/bin
 	cp -fr DEBIAN qsort-debian/
 	cp -f qsort qsort-debian/usr/local/bin/
-	mkdir -p qsort-debian/etc/qsort
+	mkdir -p qsort-debian/etc/qsort qsort-debian/etc/bash_completion.d
 	cp -f conf/* qsort-debian/etc/qsort/
+	mv qsort-debian/etc/qsort/qsort-completion.bash qsort-debian/etc/bash_completion.d
 	dpkg-deb --build qsort-debian
 	rm -drf qsort-debian
+
+autofill: conf/qsort-completion.bash
+	sudo cp "./conf/qsort-completion.bash" "/etc/bash_completion.d/"
 
 clean:
 	rm qsort
